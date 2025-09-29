@@ -1,4 +1,4 @@
-using Microsoft.Net.Http.Headers;
+using FluentValidation;
 using Wk1;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +8,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IValidator<UserCreateDTO>, ValidationUser>();
+builder.Services.AddValidation();
 
 var app = builder.Build();
 
@@ -30,8 +32,28 @@ app.MapGet("/user", async (IHttpContextAccessor httpContext, CancellationToken c
     catch (OperationCanceledException ex)
     {
         httpContext.HttpContext?.Response.Headers.Add("X-Error-Message", "Request was cancelled by the client.");
-        return Results.StatusCode(499); // 499 Client Closed Request (неофіційний, але популярний)
+        return Results.StatusCode(499);
     }
+});
+
+app.MapPost("/user", async (HttpContext context, UserCreateDTO user, IValidator<UserCreateDTO> validator, CancellationToken ct) =>
+{
+    var validationResult = validator.Validate(user);
+    if (!validationResult.IsValid)
+    {
+        var errors = validationResult.Errors.Select(e => e.ErrorMessage).FirstOrDefault();
+        var pd = new ProblemDetails
+        {
+            Type = "https://example.com/probs/internal-server-error",
+            Title = "Validation",
+            Status = 400,
+            Detail = errors,
+            Instance = context.Request.Path
+        };
+        return Results.BadRequest(new { Error = pd.Detail, Code = pd.Status});
+    }
+    // Логіка створення користувача
+    return Results.Created($"/user/{Guid.NewGuid()}", user);
 });
 
 app.Run();
@@ -47,7 +69,6 @@ internal class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandli
 {
     public async Task InvokeAsync(HttpContext context)
     {
-        context.Items.Add("X-Request-Id", context.Request.Headers[HeaderNames.RequestId].FirstOrDefault());
         var pd = new ProblemDetails
         {
             Type = "https://example.com/probs/internal-server-error",
@@ -64,7 +85,7 @@ internal class ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandli
         catch (Exception ex)
         {
             logger.LogError(ex, "An unhandled exception has occurred while executing the request.");
-            await context.Response.WriteAsJsonAsync(new { error = pd.Detail });
+            await context.Response.WriteAsJsonAsync(new { pd.Detail, pd.Status });
         }
     }
 }
