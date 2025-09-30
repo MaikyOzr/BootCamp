@@ -10,6 +10,17 @@
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-rc.1.25451.107" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
+    <PackageReference Include="Polly" Version="8.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BootCamp.Application\BootCamp.Application.csproj" />
+    <ProjectReference Include="..\BootCamp.Domain\BootCamp.Domain.csproj" />
+    <ProjectReference Include="..\BootCamp.Infrastruture\BootCamp.Infrastruture.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CustomHttp\" />
   </ItemGroup>
 
 </Project>
