@@ -7,19 +7,17 @@ using Wk1.ProblemDetails;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<SignInCommand>();
 builder.Services.AddScoped<IValidator<SingInRequst>, SignInRequestValidation>();
 builder.Services.AddValidation();
 builder.Services.AddLogging();
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -33,6 +31,7 @@ app.MapPost("/user", async
     (HttpContext context, SingInRequst requst, SignInCommand command,
     IValidator<SingInRequst> validator, CancellationToken ct) =>
 {
+
     var validationResult = validator.Validate(requst);
     if (!validationResult.IsValid)
     {
@@ -47,7 +46,6 @@ app.MapPost("/user", async
         };
         return Results.BadRequest(new { Error = pd.Detail, Code = pd.Status });
     }
-    // Логіка створення користувача
     var res = await command.ExecuteAsync(requst, ct);
 
     return Results.Ok(res);
