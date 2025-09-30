@@ -12,4 +12,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BootCamp.Application\BootCamp.Application.csproj" />
+    <ProjectReference Include="..\BootCamp.Domain\BootCamp.Domain.csproj" />
+    <ProjectReference Include="..\BootCamp.Infrastruture\BootCamp.Infrastruture.csproj" />
+  </ItemGroup>
+
 </Project>

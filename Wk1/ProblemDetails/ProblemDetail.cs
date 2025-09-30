@@ -1,6 +1,6 @@
-﻿namespace Wk1;
+﻿namespace Wk1.ProblemDetails;
 
-public  struct ProblemDetails
+public struct ProblemDetail
 {
     public string Type { get; set; }
     public string Title { get; set; }
