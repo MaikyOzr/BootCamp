@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BootCamp.Domain\BootCamp.Domain.csproj" />
+    <ProjectReference Include="..\BootCamp.Infrastruture\BootCamp.Infrastruture.csproj" />
   </ItemGroup>
 
 </Project>

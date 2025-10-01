@@ -1,0 +1,12 @@
+﻿namespace BootCamp.Domain;
+
+public class Task
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public required string Title { get; set; }
+    public string? Description { get; set; }
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public List<TaskComment> Comments { get; set; } = new();
+
+}
