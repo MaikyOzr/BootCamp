@@ -7,6 +7,6 @@ public class Task
     public string? Description { get; set; }
     public Guid UserId { get; set; }
     public User? User { get; set; }
-    public List<TaskComment> Comments { get; set; } = new();
+    public List<TaskComment> Comments { get; set; } = [];
 
 }
