@@ -1,4 +1,5 @@
-﻿using Wk1.ProblemDetails;
+﻿using BootCamp.Application;
+using Microsoft.EntityFrameworkCore;
 
 namespace Wk1.Middlewere;
 

@@ -8,4 +8,5 @@ public class GetAllTaskResponse
     public string? Description { get; set; }
     public Guid UserId { get; set; }
     public List<TaskComment>? Comments { get; set; }
+    public uint? RowVersion { get; set; }
 }

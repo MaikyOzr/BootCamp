@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BootCamp.Infrastruture.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251001143148_AddTaskAndTaskComment")]
-    partial class AddTaskAndTaskComment
+    [Migration("20251004234334_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,29 +25,6 @@ namespace BootCamp.Infrastruture.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BootCamp.Domain.Task", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Tasks");
-                });
-
             modelBuilder.Entity("BootCamp.Domain.TaskComment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -57,9 +34,6 @@ namespace BootCamp.Infrastruture.Migrations
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("TaskId")
                         .HasColumnType("uuid");
@@ -98,7 +72,47 @@ namespace BootCamp.Infrastruture.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BootCamp.Domain.Task", b =>
+            modelBuilder.Entity("BootCamp.Domain.UserTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("BootCamp.Domain.TaskComment", b =>
+                {
+                    b.HasOne("BootCamp.Domain.UserTask", "Task")
+                        .WithMany("Comments")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("BootCamp.Domain.UserTask", b =>
                 {
                     b.HasOne("BootCamp.Domain.User", "User")
                         .WithMany("Tasks")
@@ -109,25 +123,14 @@ namespace BootCamp.Infrastruture.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BootCamp.Domain.TaskComment", b =>
-                {
-                    b.HasOne("BootCamp.Domain.Task", "Task")
-                        .WithMany("Comments")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Task");
-                });
-
-            modelBuilder.Entity("BootCamp.Domain.Task", b =>
-                {
-                    b.Navigation("Comments");
-                });
-
             modelBuilder.Entity("BootCamp.Domain.User", b =>
                 {
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("BootCamp.Domain.UserTask", b =>
+                {
+                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }

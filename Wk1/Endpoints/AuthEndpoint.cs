@@ -1,7 +1,7 @@
-﻿using BootCamp.Application.Feature.Auth.Models.Request;
+﻿using BootCamp.Application;
+using BootCamp.Application.Feature.Auth.Models.Request;
 using BootCamp.Application.Feature.Auth.SingIn.Command;
 using FluentValidation;
-using Wk1.ProblemDetails;
 
 namespace Wk1.Endpoints;
 

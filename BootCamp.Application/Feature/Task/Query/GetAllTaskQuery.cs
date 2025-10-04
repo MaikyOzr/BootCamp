@@ -9,13 +9,14 @@ public class GetAllTaskQuery(AppDbContext context)
     public async Task<List<GetAllTaskResponse>> ExecuteAsync(Guid userId, CancellationToken ct)
     {
         var task = await context.Tasks.Where(x=> x.UserId == userId)
-            .Include(t => t.Comments)
-            .Select(t => new GetAllTaskResponse
+            .Include(x => x.Comments)
+            .Select(x => new GetAllTaskResponse
             {
-                Comments = t.Comments,
-                Description = t.Description,
-                Title = t.Title,
-                UserId = t.UserId,
+                Comments = x.Comments,
+                Description = x.Description,
+                Title = x.Title,
+                UserId = x.UserId,
+                RowVersion = x.RowVersion,
             })
             .AsNoTracking()
             .ToListAsync(ct);

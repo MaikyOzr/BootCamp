@@ -8,13 +8,15 @@ public class GetByIdTaskQuery(AppDbContext context)
 {
     public async Task<GetByIdTaskResponse> ExecuteAsync(Guid id, CancellationToken ct)
     {
-        var task = await context.Tasks.Where(x=> x.Id == id).Include(x => x.Comments)
-            .Select(t => new GetByIdTaskResponse
+        var task = await context.Tasks.Where(x=> x.Id == id)
+            .Include(x => x.Comments)
+            .Select(x => new GetByIdTaskResponse
             {
-                Comments = t.Comments,
-                Description = t.Description,
-                Title = t.Title,
-                UserId = t.UserId,
+                Comments = x.Comments,
+                Description = x.Description,
+                Title = x.Title,
+                UserId = x.UserId,
+                RowVersion = x.RowVersion
             })
             .AsNoTracking()
             .FirstOrDefaultAsync(ct);

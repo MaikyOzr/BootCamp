@@ -14,7 +14,14 @@ public class UpdateTaskCommand(AppDbContext context)
         task.Title = request.Title;
         task.Description = request.Description;
 
-        await context.SaveChangesAsync(ct);
-        return new() { Id = task.Id};
+        try
+        {
+            await context.SaveChangesAsync(ct);
+            return new() { Id = task.Id };
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new Exception("A concurrency error occurred while updating the task.", ex);
+        }
     }
 }

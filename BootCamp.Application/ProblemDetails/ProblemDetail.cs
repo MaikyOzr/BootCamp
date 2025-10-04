@@ -1,4 +1,4 @@
-﻿namespace Wk1.ProblemDetails;
+﻿namespace BootCamp.Application;
 
 public struct ProblemDetail
 {

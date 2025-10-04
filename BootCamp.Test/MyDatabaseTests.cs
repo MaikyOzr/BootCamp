@@ -1,14 +1,18 @@
 ﻿using System.Data;
 using System.Data.Common;
+using Testcontainers.PostgreSql;
 
 namespace BootCamp.Test;
 
 public class MyDatabaseTests(DatabaseFixture fixture) : IClassFixture<DatabaseFixture>
 {
+
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void ConnectionStateReturnsOpen()
+    public async Task ConnectionStateReturnsOpen()
     {
+        var postgreSqlContainer = new PostgreSqlBuilder().Build();
+        await postgreSqlContainer.StartAsync();
         // Given
         using DbConnection connection = fixture.CreateConnection();
 

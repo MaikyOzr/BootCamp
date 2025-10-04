@@ -12,4 +12,13 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<UserTask> Tasks { get; set; }
     public DbSet<TaskComment> TaskComments { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<UserTask>(b=> 
+            b.Property(t => t.RowVersion).IsRowVersion().HasColumnName("xmin").IsConcurrencyToken()
+        );
+    }
 }
