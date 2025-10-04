@@ -72,5 +72,11 @@ public static class TaskEndpoint
             var res = await query.ExecuteAsync(id, ct);
             return Results.Ok(res);
         });
+
+        app.MapDelete("/task/{id:guid}", async (Guid id, DeleteTaskQuery query, CancellationToken ct) => 
+        {
+            var res = await query.ExecuteAsync(id, ct);
+            return Results.Ok(res);
+        });
     }
 }

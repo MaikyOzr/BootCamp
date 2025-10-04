@@ -8,7 +8,7 @@ public class CreateTaskCommand(AppDbContext context)
 {
     public async Task<BaseApiResponse> ExecuteAsync(CreateTaskRequest request, CancellationToken ct)
     {
-        var task = new Domain.Task
+        var task = new Domain.UserTask
         {
             Title = request.Title,
             Description = request.Description,

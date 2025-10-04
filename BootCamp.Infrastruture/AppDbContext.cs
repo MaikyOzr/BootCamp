@@ -10,6 +10,6 @@ public class AppDbContext : DbContext
     }
      
     public DbSet<User> Users { get; set; }
-    public DbSet<Domain.Task> Tasks { get; set; }
+    public DbSet<UserTask> Tasks { get; set; }
     public DbSet<TaskComment> TaskComments { get; set; }
 }

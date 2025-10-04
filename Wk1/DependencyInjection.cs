@@ -25,7 +25,6 @@ public static class DependencyInjection
         services.AddLogging();
         services.AddHttpClient();
         services.AddQuery();
-        services.AddDbContext<AppDbContext>();
         services
             .AddNpgsql<AppDbContext>(configuration.GetConnectionString("DefaultConnection"));
     }

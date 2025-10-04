@@ -11,7 +11,7 @@ public class CreateTaskCommentCommand(AppDbContext context)
     public async Task<BaseApiResponse> ExecuteAsync
         (CreateTaskCommentRequest request, CancellationToken ct)
     {
-        var task = await context.Tasks.Where(x=> x.Id == request.TaskId).FirstOrDefaultAsync(ct);
+        var task = await context.Tasks.Where(x=> x.Id == request.TaskId).SingleOrDefaultAsync(ct);
 
         var taskComment = new TaskComment
         {

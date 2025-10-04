@@ -1,6 +1,6 @@
 ﻿namespace BootCamp.Domain;
 
-public class Task
+public class UserTask
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public required string Title { get; set; }

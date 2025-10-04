@@ -75,5 +75,11 @@ public static class TaskCommentEndpoint
             }
             return Results.Ok(res);
         });
+
+        app.MapDelete("/task-comment/{id:guid}",async (Guid id, DeleteTaskCommentQuery query, CancellationToken ct) => 
+        {
+            var res = await query.ExecuteAsync(id, ct);
+            return Results.Ok(res);
+        });
     }
 }

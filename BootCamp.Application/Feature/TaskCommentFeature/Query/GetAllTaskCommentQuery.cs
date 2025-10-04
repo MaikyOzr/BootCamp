@@ -15,6 +15,7 @@ public class GetAllTaskCommentQuery(AppDbContext context)
                 Content = tc.Content,
                 TaskId = tc.TaskId
             })
+            .AsNoTracking()
             .ToListAsync(ct);
 
         return taskComments;

@@ -9,7 +9,8 @@ namespace BootCamp.Application.Feature.TaskCommentFeature.Command
     {
         public async Task<BaseApiResponse> ExecuteAsync(Guid id, UpdateTaskCommentRequest request, CancellationToken ct)
         {
-            var taskComment = await context.TaskComments.FirstOrDefaultAsync(x => x.Id == id, ct);
+            var taskComment = await context.TaskComments.Where(x => x.Id == id)
+                 .SingleOrDefaultAsync(ct);
             
             taskComment.Content = request.Content;
 
