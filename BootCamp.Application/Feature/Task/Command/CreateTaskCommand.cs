@@ -9,13 +9,18 @@ public class CreateTaskCommand(AppDbContext context)
 {
     public async Task<BaseApiResponse> ExecuteAsync(CreateTaskRequest request, CancellationToken ct)
     {
-
         var task = new Domain.UserTask
         {
             Title = request.Title,
             Description = request.Description,
             UserId = request.UserId
         };
+
+        var existTask = await context.Tasks.Where(x => x.UserId == task.UserId).SingleOrDefaultAsync(ct);
+        if (existTask != null && existTask.Title == task.Title)
+        {
+            throw new Exception("Same task is exist");
+        }
 
         context.Tasks.Add(task);
 

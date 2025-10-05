@@ -20,5 +20,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<UserTask>(b=> 
             b.Property(t => t.RowVersion).IsRowVersion().HasColumnName("xmin").IsConcurrencyToken()
         );
+
+        modelBuilder.Entity<UserTask>().HasQueryFilter(x=> !x.IsDeleted);
     }
 }

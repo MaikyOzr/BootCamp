@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IValidator<CreateTaskCommentRequest>, CreateTaskCommentRequestValidation>();
         services.AddScoped<IValidator<CreateTaskRequest>, CreateTaskRequestValidation>();
         services.AddScoped<IValidator<SingInRequst>, SignInRequestValidation>();
+        services.AddScoped<IValidator<CreateTaskWithFirstCommentRequest>, CreateTaskWithFirstCommentValidator>();
         return services;
     }
 
@@ -46,6 +47,7 @@ public static class DependencyInjection
         services.AddScoped<UpdateTaskCommand>();
         services.AddScoped<CreateTaskCommentCommand>();
         services.AddScoped<UpdateTaskCommentCommand>();
+        services.AddScoped<CreateTaskWithFirstCommentCommand>();
         return services;
     }
 

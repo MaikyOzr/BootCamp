@@ -14,4 +14,6 @@ public class UserTask
     [Timestamp]
     public uint RowVersion { get; set; }
 
+    public bool IsDeleted { get; set; }
+
 }

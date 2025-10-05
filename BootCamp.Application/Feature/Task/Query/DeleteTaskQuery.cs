@@ -5,12 +5,13 @@ namespace BootCamp.Application.Feature.Task.Query;
 
 public class DeleteTaskQuery(AppDbContext context)
 {
-    public async Task<bool> ExecuteAsync(Guid id, CancellationToken ct)
+    public async Task<string> ExecuteAsync(Guid id, CancellationToken ct)
     {
         var task = await context.Tasks.Where(x=> x.Id == id).Include(x=> x.Comments)
-            .SingleOrDefaultAsync(ct);
-        context.Tasks.Remove(task);
+            .FirstOrDefaultAsync(ct) ?? throw new Exception("Not Found");
+        
+        task.IsDeleted = true;
         await context.SaveChangesAsync(ct);
-        return true;
+        return "Delete success!";
     }
 }

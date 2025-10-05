@@ -4,6 +4,7 @@ using BootCamp.Application.Feature.Task.Models.Request;
 using BootCamp.Application.Feature.Task.Query;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 
 namespace Wk1.Endpoints;
 
@@ -33,6 +34,31 @@ public static class TaskEndpoint
 
             return Results.Ok(res);
         });
+
+        app.MapPost("/task-with-comment", async 
+            (HttpContext context, CreateTaskWithFirstCommentRequest request, 
+            CreateTaskWithFirstCommentCommand command, 
+            IValidator<CreateTaskWithFirstCommentRequest> validator, CancellationToken ct) => 
+            {
+                var validationResult = validator.Validate(request);
+                if (!validationResult.IsValid)
+                {
+                    var errors = validationResult.Errors.Select(e => e.ErrorMessage).FirstOrDefault();
+                    var pd = new ProblemDetail
+                    {
+                        Type = "https://example.com/probs/internal-server-error",
+                        Title = "Validation",
+                        Status = 400,
+                        Detail = errors,
+                        Instance = context.Request.Path
+                    };
+                    return Results.BadRequest(new { Error = pd.Detail, Code = pd.Status });
+                }
+                var res = await command.ExecuteAsync(request, ct);
+
+                return Results.Ok(res);
+            }
+        );
 
         app.MapPatch("/task/{id:guid}", async
         (HttpContext context, IValidator<UpdateTaskRequest> validator,
