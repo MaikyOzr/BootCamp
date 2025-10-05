@@ -7,6 +7,5 @@ public class User
     public required string LastName { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
-
-    public List<User> Users { get; set; } = new();
+    public List<UserTask> Tasks { get; set; } = new();
 }
