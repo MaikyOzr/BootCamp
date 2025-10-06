@@ -10,6 +10,7 @@ using BootCamp.Application.Feature.ValidationService;
 using BootCamp.Application.ValidationService;
 using BootCamp.Infrastruture;
 using FluentValidation;
+using Wk1.Exceptions;
 
 namespace Wk1;
 
@@ -24,6 +25,14 @@ public static class DependencyInjection
         services.AddCommand();
         services.AddLogging();
         services.AddHttpClient();
+        services.AddProblemDetails(opt => {
+            opt.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+            };
+        });
+        services.AddExceptionHandler<ValidatorExceptionHandler>();
+        services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddQuery();
         services
             .AddNpgsql<AppDbContext>(configuration.GetConnectionString("DefaultConnection"));

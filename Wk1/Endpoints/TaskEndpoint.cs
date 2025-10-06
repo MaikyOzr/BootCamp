@@ -1,10 +1,7 @@
-﻿using BootCamp.Application;
-using BootCamp.Application.Feature.Task.Command;
+﻿using BootCamp.Application.Feature.Task.Command;
 using BootCamp.Application.Feature.Task.Models.Request;
 using BootCamp.Application.Feature.Task.Query;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Polly;
 
 namespace Wk1.Endpoints;
 
@@ -16,20 +13,7 @@ public static class TaskEndpoint
         CreateTaskCommand command, IValidator<CreateTaskRequest> validator,
         CancellationToken ct) =>
         {
-            var validationResult = validator.Validate(request);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => e.ErrorMessage).FirstOrDefault();
-                var pd = new ProblemDetail
-                {
-                    Type = "https://example.com/probs/internal-server-error",
-                    Title = "Validation",
-                    Status = 400,
-                    Detail = errors,
-                    Instance = context.Request.Path
-                };
-                return Results.BadRequest(new { Error = pd.Detail, Code = pd.Status });
-            }
+            validator.ValidateAndThrow(request);
             var res = await command.ExecuteAsync(request, ct);
 
             return Results.Ok(res);
@@ -40,20 +24,7 @@ public static class TaskEndpoint
             CreateTaskWithFirstCommentCommand command, 
             IValidator<CreateTaskWithFirstCommentRequest> validator, CancellationToken ct) => 
             {
-                var validationResult = validator.Validate(request);
-                if (!validationResult.IsValid)
-                {
-                    var errors = validationResult.Errors.Select(e => e.ErrorMessage).FirstOrDefault();
-                    var pd = new ProblemDetail
-                    {
-                        Type = "https://example.com/probs/internal-server-error",
-                        Title = "Validation",
-                        Status = 400,
-                        Detail = errors,
-                        Instance = context.Request.Path
-                    };
-                    return Results.BadRequest(new { Error = pd.Detail, Code = pd.Status });
-                }
+                validator.ValidateAndThrow(request);
                 var res = await command.ExecuteAsync(request, ct);
 
                 return Results.Ok(res);
@@ -64,20 +35,7 @@ public static class TaskEndpoint
         (HttpContext context, IValidator<UpdateTaskRequest> validator,
         Guid id, UpdateTaskRequest request, UpdateTaskCommand command, CancellationToken ct) =>
         {
-            var validationResult = validator.Validate(request);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => e.ErrorMessage).FirstOrDefault();
-                var pd = new ProblemDetail
-                {
-                    Type = "https://example.com/probs/internal-server-error",
-                    Title = "Validation",
-                    Status = 400,
-                    Detail = errors,
-                    Instance = context.Request.Path
-                };
-                return Results.BadRequest(new { Error = pd.Detail, Code = pd.Status });
-            }
+            validator.ValidateAndThrow(request);
             var res = await command.ExecuteAsync(id, request, ct);
             return Results.Ok(res);
         });

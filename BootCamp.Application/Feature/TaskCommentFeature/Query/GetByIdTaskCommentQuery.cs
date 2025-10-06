@@ -15,7 +15,8 @@ public class GetByIdTaskCommentQuery(AppDbContext context)
         return new() 
         {
             Content = taskComment.Content,
-            TaskId = taskComment.TaskId
+            TaskId = taskComment.TaskId,
+            RowVersion = taskComment.RowVersion,
         };
     }
 }

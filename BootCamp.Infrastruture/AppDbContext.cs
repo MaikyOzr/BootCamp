@@ -22,5 +22,6 @@ public class AppDbContext : DbContext
         );
 
         modelBuilder.Entity<UserTask>().HasQueryFilter(x=> !x.IsDeleted);
+        modelBuilder.Entity<TaskComment>().HasQueryFilter(x => !x.IsDeleted);
     }
 }
