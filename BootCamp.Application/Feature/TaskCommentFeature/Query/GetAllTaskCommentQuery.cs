@@ -10,10 +10,11 @@ public class GetAllTaskCommentQuery(AppDbContext context)
     {
         var taskComments = await context.TaskComments
             .Where(x => x.TaskId == id)
-            .Select(tc => new GetAllTaskCommentResponse
+            .Select(x => new GetAllTaskCommentResponse
             {
-                Content = tc.Content,
-                TaskId = tc.TaskId
+                Content = x.Content,
+                TaskId = x.TaskId,
+                RowVersion = x.RowVersion,
             })
             .AsNoTracking()
             .ToListAsync(ct);

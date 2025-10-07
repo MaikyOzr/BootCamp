@@ -1,4 +1,6 @@
-﻿namespace BootCamp.Domain;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BootCamp.Domain;
 
 public class TaskComment
 {
@@ -6,4 +8,8 @@ public class TaskComment
     public required string Content { get; set; }
     public Guid TaskId { get; set; }
     public UserTask? Task { get; set; }
+    public bool IsDeleted { get; set; }
+
+    [Timestamp]
+    public uint RowVersion { get; set; }
 }
