@@ -10,7 +10,10 @@ using BootCamp.Application.Feature.ValidationService;
 using BootCamp.Application.ValidationService;
 using BootCamp.Infrastruture;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Wk1.Exceptions;
+using Wk1.Options;
 
 namespace Wk1;
 
@@ -34,8 +37,20 @@ public static class DependencyInjection
         services.AddExceptionHandler<ValidatorExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddQuery();
-        services
-            .AddNpgsql<AppDbContext>(configuration.GetConnectionString("DefaultConnection"));
+        
+        services.AddOptions<ConnectionStringsOptions>()
+            .Bind(configuration.GetSection(ConnectionStringsOptions.SectionName))
+            .ValidateDataAnnotations()
+            .Validate(x=> !string.IsNullOrWhiteSpace(x.DefaultConnection),
+            "ConnectionStrings:DefaultConnection must be set")
+            .ValidateOnStart();
+
+        services.AddDbContext<AppDbContext>((sp, db) => 
+        {
+            var cs = sp.GetRequiredService<IOptions<ConnectionStringsOptions>>().Value.DefaultConnection;
+
+            db.UseNpgsql(cs);
+        });
     }
 
     private static IServiceCollection AddValidation(this IServiceCollection services)
@@ -70,4 +85,6 @@ public static class DependencyInjection
         services.AddScoped<DeleteTaskCommentQuery>();
         return services;
     }
+
+    
 }
