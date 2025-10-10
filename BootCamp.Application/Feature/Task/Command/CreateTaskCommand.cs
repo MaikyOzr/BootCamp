@@ -1,19 +1,23 @@
 ﻿using BootCamp.Application.Feature.BaseResponse;
 using BootCamp.Application.Feature.Task.Models.Request;
+using BootCamp.Domain;
 using BootCamp.Infrastruture;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BootCamp.Application.Feature.Task.Command;
 
-public class CreateTaskCommand(AppDbContext context)
+public class CreateTaskCommand(AppDbContext context, UserManager<User> userManager)
 {
     public async Task<BaseApiResponse> ExecuteAsync(CreateTaskRequest request, CancellationToken ct)
     {
-        var task = new Domain.UserTask
+        var existUser = await userManager.FindByIdAsync(request.UserId.ToString());
+
+        var task = new UserTask
         {
             Title = request.Title,
             Description = request.Description,
-            UserId = request.UserId
+            UserId = existUser.Id,
         };
 
         var existTask = await context.Tasks.Where(x => x.UserId == task.UserId).SingleOrDefaultAsync(ct);

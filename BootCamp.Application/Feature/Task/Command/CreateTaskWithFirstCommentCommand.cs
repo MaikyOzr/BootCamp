@@ -2,22 +2,25 @@
 using BootCamp.Application.Feature.Task.Models.Request;
 using BootCamp.Domain;
 using BootCamp.Infrastruture;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Transactions;
 
 namespace BootCamp.Application.Feature.Task.Command;
 
-public class CreateTaskWithFirstCommentCommand(AppDbContext context)
+public class CreateTaskWithFirstCommentCommand(AppDbContext context, UserManager<User> userManager)
 {
     public async Task<BaseApiResponse> ExecuteAsync(CreateTaskWithFirstCommentRequest request, CancellationToken ct) 
     {
+        var existUser = await userManager.FindByIdAsync(request.UserId.ToString());
+
         var taskComment = new TaskComment() { Content = request.TaskComment };
 
         var task = new UserTask()
         {
             Title = request.TaskTitle,
             Description = request.TaskDescription,
-            UserId = request.UserId,
+            UserId = existUser.Id,
             Comments = new List<TaskComment> { taskComment }
         };
 

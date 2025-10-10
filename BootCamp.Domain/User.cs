@@ -1,11 +1,11 @@
-﻿namespace BootCamp.Domain;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class User
+namespace BootCamp.Domain;
+
+
+public class User : IdentityUser<Guid>
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
-    public required string Email { get; set; }
-    public required string PasswordHash { get; set; }
     public List<UserTask> Tasks { get; set; } = new();
 }

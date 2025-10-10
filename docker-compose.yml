@@ -1,0 +1,6 @@
+services:
+  wk1:
+    image: ${DOCKER_REGISTRY-}wk1
+    build:
+      context: .
+      dockerfile: Wk1/Dockerfile
