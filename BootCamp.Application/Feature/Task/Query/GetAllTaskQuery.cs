@@ -1,5 +1,7 @@
 ﻿using BootCamp.Application.Feature.Task.Models.Response;
+using BootCamp.Domain;
 using BootCamp.Infrastruture;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BootCamp.Application.Feature.Task.Query;

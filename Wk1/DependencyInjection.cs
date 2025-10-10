@@ -1,5 +1,7 @@
-﻿using BootCamp.Application.Feature.Auth.Models.Request;
+﻿using BootCamp.Application.AuthService;
+using BootCamp.Application.Feature.Auth.Models.Request;
 using BootCamp.Application.Feature.Auth.SingIn.Command;
+using BootCamp.Application.Feature.Auth.SingUp.Command;
 using BootCamp.Application.Feature.Task.Command;
 using BootCamp.Application.Feature.Task.Models.Request;
 using BootCamp.Application.Feature.Task.Query;
@@ -8,8 +10,11 @@ using BootCamp.Application.Feature.TaskCommentFeature.Models.Request;
 using BootCamp.Application.Feature.TaskCommentFeature.Query;
 using BootCamp.Application.Feature.ValidationService;
 using BootCamp.Application.ValidationService;
+using BootCamp.Domain;
 using BootCamp.Infrastruture;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Wk1.Exceptions;
@@ -45,12 +50,29 @@ public static class DependencyInjection
             "ConnectionStrings:DefaultConnection must be set")
             .ValidateOnStart();
 
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .ValidateDataAnnotations()
+            .Validate(x => !string.IsNullOrWhiteSpace(x.SecretKey), "Jwt:SecretKey must be set")
+            .ValidateOnStart();
+        services.AddScoped<JwtTokenService>();
+
         services.AddDbContext<AppDbContext>((sp, db) => 
         {
             var cs = sp.GetRequiredService<IOptions<ConnectionStringsOptions>>().Value.DefaultConnection;
 
             db.UseNpgsql(cs);
         });
+
+        services.AddIdentityCore<User>(opt => { })
+        .AddEntityFrameworkStores<AppDbContext>()
+        .AddSignInManager()
+        .AddDefaultTokenProviders();
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer();
+        services.AddAuthorization();
+
     }
 
     private static IServiceCollection AddValidation(this IServiceCollection services)
@@ -59,7 +81,8 @@ public static class DependencyInjection
         services.AddScoped<IValidator<UpdateTaskCommentRequest>, UpdateTaskCommentValidation>();
         services.AddScoped<IValidator<CreateTaskCommentRequest>, CreateTaskCommentRequestValidation>();
         services.AddScoped<IValidator<CreateTaskRequest>, CreateTaskRequestValidation>();
-        services.AddScoped<IValidator<SingInRequst>, SignInRequestValidation>();
+        services.AddScoped<IValidator<SignInRequst>, SignInRequestValidation>();
+        services.AddScoped<IValidator<SignUpRequest>, SignUpRqeustValidation>();
         services.AddScoped<IValidator<CreateTaskWithFirstCommentRequest>, CreateTaskWithFirstCommentValidator>();
         return services;
     }
@@ -67,6 +90,7 @@ public static class DependencyInjection
     private static IServiceCollection AddCommand(this IServiceCollection services)
     {
         services.AddScoped<SignInCommand>();
+        services.AddScoped<SignUpCommand>();
         services.AddScoped<CreateTaskCommand>();
         services.AddScoped<UpdateTaskCommand>();
         services.AddScoped<CreateTaskCommentCommand>();
@@ -85,6 +109,4 @@ public static class DependencyInjection
         services.AddScoped<DeleteTaskCommentQuery>();
         return services;
     }
-
-    
 }

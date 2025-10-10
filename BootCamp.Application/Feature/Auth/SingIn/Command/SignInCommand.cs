@@ -1,25 +1,32 @@
-﻿using BootCamp.Application.Feature.Auth.Models.Request;
-using BootCamp.Application.Feature.BaseResponse;
+﻿using BootCamp.Application.AuthService;
+using BootCamp.Application.Feature.Auth.Models.Request;
+using BootCamp.Application.Feature.Auth.Models.Response;
 using BootCamp.Domain;
-using BootCamp.Infrastruture;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace BootCamp.Application.Feature.Auth.SingIn.Command;
 
-public class SignInCommand(AppDbContext context)
+public sealed class SignInCommand(UserManager<User> userManager, JwtTokenService jwtService)
 {
-    public async Task<BaseApiResponse> ExecuteAsync(SingInRequst requst, CancellationToken ct)
+    public async Task<SignInResponse> ExecuteAsync(SignInRequst request, CancellationToken ct)
     {
-        var user = new User() 
+        var existingUser = await userManager.FindByEmailAsync(request.Email);
+        if (!await userManager.CheckPasswordAsync(existingUser, request.Password))
         {
-            Email = requst.Email, 
-            FirstName = requst.FirstName, 
-            LastName= requst.LastName,
-            PasswordHash = requst.Password
+            throw new Exception("Wrong Password!");
+        }
+
+        var claims = new List<Claim> 
+        {
+            new Claim(ClaimTypes.NameIdentifier, existingUser.Id.ToString()),
+            new Claim(ClaimTypes.Email, existingUser.Email),
+            new Claim(ClaimTypes.Name, existingUser.UserName)
         };
 
-        context.Add(user);
-        await context.SaveChangesAsync(ct);
+        var token = jwtService.CreateAccessToken(claims);
 
-        return new() { Id = user.Id };
+        return new() { Id = existingUser.Id, Token = token };
+
     }
 }
