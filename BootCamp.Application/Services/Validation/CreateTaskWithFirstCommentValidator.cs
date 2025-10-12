@@ -1,7 +1,7 @@
 ﻿using BootCamp.Application.Feature.Task.Models.Request;
 using FluentValidation;
 
-namespace BootCamp.Application.ValidationService;
+namespace BootCamp.Application.Services.ValidationService;
 
 public class CreateTaskWithFirstCommentValidator : AbstractValidator<CreateTaskWithFirstCommentRequest>
 {

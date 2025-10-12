@@ -3,5 +3,8 @@
   <Project Path="BootCamp.Domain/BootCamp.Domain.csproj" Id="225ddd47-abf4-4ec8-bca3-1244f6d28bb4" />
   <Project Path="BootCamp.Infrastruture/BootCamp.Infrastruture.csproj" Id="34806ac6-b8b0-4048-b167-cfeabef001dd" />
   <Project Path="BootCamp.Test/BootCamp.Test.csproj" Id="e63b5d6e-6c33-4f82-93d8-2a109c703b59" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="Wk1/Wk1.csproj" />
 </Solution>

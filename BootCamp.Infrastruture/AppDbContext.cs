@@ -1,14 +1,14 @@
 ﻿using BootCamp.Domain;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BootCamp.Infrastruture;
 
-public class AppDbContext : DbContext
+public sealed class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-     
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
     public DbSet<User> Users { get; set; }
     public DbSet<UserTask> Tasks { get; set; }
     public DbSet<TaskComment> TaskComments { get; set; }
