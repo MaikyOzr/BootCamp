@@ -1,7 +1,7 @@
 ﻿using BootCamp.Application.Feature.Auth.Models.Request;
 using FluentValidation;
 
-namespace BootCamp.Application.ValidationService
+namespace BootCamp.Application.Services.ValidationService
 {
     public sealed class SignUpRqeustValidation : AbstractValidator<SignUpRequest>
     {

@@ -1,7 +1,12 @@
 ﻿using BootCamp.Application.Feature.Task.Command;
 using BootCamp.Application.Feature.Task.Models.Request;
+using BootCamp.Application.Feature.Task.Models.Response;
 using BootCamp.Application.Feature.Task.Query;
+using BootCamp.Domain;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Memory;
+using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Wk1.Endpoints;
 
@@ -41,21 +46,37 @@ public static class TaskEndpoint
         });
 
         app.MapGet("/tasks/{userId:guid}", async
-        (Guid userId, GetAllTaskQuery query, CancellationToken ct) =>
+        (Guid userId, GetAllTaskQuery query, IMemoryCache cache, CancellationToken ct) =>
         {
-            var res = await query.ExecuteAsync(userId, ct);
-            if (res == null || !res.Any())
+            string cacheKey = $"tasks";
+            if (cache.Get(cacheKey) == null)
             {
-                return Results.NotFound();
+                var res = await query.ExecuteAsync(userId, ct);
+                if (res == null || !res.Any())
+                {
+                    return Results.NotFound();
+                }
+                cache.Set(cacheKey, res, TimeSpan.FromMinutes(10));
             }
-            return Results.Ok(res);
+            var tasks = cache.Get(cacheKey);
+            return Results.Ok(tasks);
         });
 
         app.MapGet("/task/{id:guid}", async
-        (Guid id, GetByIdTaskQuery query, CancellationToken ct) =>
+        (Guid id, GetByIdTaskQuery query, HttpClient client, IConnectionMultiplexer muxer, CancellationToken ct) =>
         {
-            var res = await query.ExecuteAsync(id, ct);
-            return Results.Ok(res);
+            var key = $"task:{id}";
+            IDatabase redis = muxer.GetDatabase();
+            var value = await redis.StringGetAsync(key);
+            if (value.IsNull)
+            {
+                var res = await query.ExecuteAsync(id, ct);
+                await redis.StringSetAsync(key, JsonSerializer.Serialize(res), TimeSpan.FromMinutes(10));
+                return Results.Ok(res);
+            }
+            var task = JsonSerializer.Deserialize<GetByIdTaskResponse>(value.ToString());
+            return Results.Ok(task);
+
         });
 
         app.MapDelete("/task/{id:guid}", async (Guid id, DeleteTaskQuery query, CancellationToken ct) => 

@@ -17,7 +17,7 @@ public class CreateTaskCommand(AppDbContext context, UserManager<User> userManag
         {
             Title = request.Title,
             Description = request.Description,
-            UserId = existUser.Id,
+            UserId = request.UserId,
         };
 
         var existTask = await context.Tasks.Where(x => x.UserId == task.UserId).SingleOrDefaultAsync(ct);

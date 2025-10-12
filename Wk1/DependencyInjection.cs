@@ -8,8 +8,7 @@ using BootCamp.Application.Feature.Task.Query;
 using BootCamp.Application.Feature.TaskCommentFeature.Command;
 using BootCamp.Application.Feature.TaskCommentFeature.Models.Request;
 using BootCamp.Application.Feature.TaskCommentFeature.Query;
-using BootCamp.Application.Feature.ValidationService;
-using BootCamp.Application.ValidationService;
+using BootCamp.Application.Services.ValidationService;
 using BootCamp.Domain;
 using BootCamp.Infrastruture;
 using FluentValidation;
@@ -17,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using Wk1.Exceptions;
 using Wk1.Options;
 
@@ -42,7 +42,8 @@ public static class DependencyInjection
         services.AddExceptionHandler<ValidatorExceptionHandler>();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddQuery();
-        
+        services.AddMemoryCache();
+
         services.AddOptions<ConnectionStringsOptions>()
             .Bind(configuration.GetSection(ConnectionStringsOptions.SectionName))
             .ValidateDataAnnotations()
@@ -73,6 +74,7 @@ public static class DependencyInjection
             .AddJwtBearer();
         services.AddAuthorization();
 
+        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost"));
     }
 
     private static IServiceCollection AddValidation(this IServiceCollection services)
