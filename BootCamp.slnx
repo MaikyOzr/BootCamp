@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="../BootCamp.RabbitMqWorker/BootCamp.RabbitMqWorker.csproj" Id="d5ec2aa9-1d8d-4272-ac4a-e0691d89651d" />
+  <Project Path="../BootCamp.RabitMqPublisher/BootCamp.RabitMqPublisher.csproj" Id="bc199c88-da76-4772-88cc-88a43fce1ec5" />
   <Project Path="BootCamp.Application/BootCamp.Application.csproj" Id="a7da0cf4-0456-4154-8602-5d3a0658ee9a" />
   <Project Path="BootCamp.Domain/BootCamp.Domain.csproj" Id="225ddd47-abf4-4ec8-bca3-1244f6d28bb4" />
   <Project Path="BootCamp.Infrastruture/BootCamp.Infrastruture.csproj" Id="34806ac6-b8b0-4048-b167-cfeabef001dd" />

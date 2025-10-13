@@ -11,11 +11,13 @@ using BootCamp.Application.Feature.TaskCommentFeature.Query;
 using BootCamp.Application.Services.ValidationService;
 using BootCamp.Domain;
 using BootCamp.Infrastruture;
+using BootCamp.RabitMqPublisher;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 using StackExchange.Redis;
 using Wk1.Exceptions;
 using Wk1.Options;
@@ -43,6 +45,7 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddQuery();
         services.AddMemoryCache();
+        services.AddRabbitMq(configuration);
 
         services.AddOptions<ConnectionStringsOptions>()
             .Bind(configuration.GetSection(ConnectionStringsOptions.SectionName))
@@ -75,6 +78,8 @@ public static class DependencyInjection
         services.AddAuthorization();
 
         services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect("localhost"));
+
+        
     }
 
     private static IServiceCollection AddValidation(this IServiceCollection services)
@@ -109,6 +114,45 @@ public static class DependencyInjection
         services.AddScoped<GetByIdTaskCommentQuery>();
         services.AddScoped<GetAllTaskCommentQuery>();
         services.AddScoped<DeleteTaskCommentQuery>();
+        return services;
+    }
+
+    public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions<RabbitMqOptions>()
+            .Bind(configuration.GetSection(RabbitMqOptions.SectionName))
+            .ValidateDataAnnotations()
+            .Validate(opt => !string.IsNullOrWhiteSpace(opt.UserName), "UserName is required")
+            .Validate(opt => !string.IsNullOrWhiteSpace(opt.Password), "Password is required")
+            .ValidateOnStart();
+
+        services.AddSingleton<IConnection>(sp =>
+        {
+            var opt = sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("RabbitMQ");
+
+            logger.LogInformation("🐇 Connecting to RabbitMQ → {Host}:{Port}, vhost={VHost}, user={User}",
+                opt.HostName, opt.Port, opt.VirtualHost, opt.UserName);
+
+            var factory = new ConnectionFactory
+            {
+                HostName = opt.HostName,
+                Port = opt.Port,
+                UserName = opt.UserName,
+                Password = opt.Password,
+                VirtualHost = opt.VirtualHost,
+                AutomaticRecoveryEnabled = true,
+                TopologyRecoveryEnabled = true,
+            };
+
+            var connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
+
+            logger.LogInformation("✅ RabbitMQ connected successfully");
+            return connection;
+        });
+
+        services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
+
         return services;
     }
 }
