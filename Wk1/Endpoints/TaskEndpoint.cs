@@ -5,7 +5,6 @@ using BootCamp.Application.Feature.Task.Query;
 using BootCamp.RabitMqPublisher;
 using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
-using RabbitMQ.Client;
 using StackExchange.Redis;
 using System.Text.Json;
 
