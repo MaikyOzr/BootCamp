@@ -1,4 +1,5 @@
-﻿using BootCamp.TaskService.Application.TaskFeature.Command;
+﻿using BootCamp.RabitMqPublisher;
+using BootCamp.TaskService.Application.TaskFeature.Command;
 using BootCamp.TaskService.Application.TaskFeature.Models.Request;
 using BootCamp.TaskService.Application.TaskFeature.Models.Response;
 using BootCamp.TaskService.Application.TaskFeature.Query;
@@ -13,13 +14,11 @@ public static class TaskEndpoint
 {
     public static void MapTaskEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapPost("/task", async (HttpContext context, CreateTaskRequest request,
-        CreateTaskCommand command, IValidator<CreateTaskRequest> validator,
-        CancellationToken ct) =>
+        app.MapPost("/task", async (CreateTaskRequest request, CreateTaskCommand command,
+            IValidator<CreateTaskRequest> validator, CancellationToken ct) =>
         {
             validator.ValidateAndThrow(request);
             var res = await command.ExecuteAsync(request, ct);
-
             return Results.Ok(res);
         });
 

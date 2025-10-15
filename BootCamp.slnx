@@ -11,6 +11,7 @@
     <Project Path="BootCamp.UserService.Infrastructure/BootCamp.UserService.Infrastructure.csproj" Id="d2e33a2c-be27-429a-8f0c-3c814377db26" />
     <Project Path="BootCamp.UserService/BootCamp.UserService.Web.csproj" Id="95b72e53-c9e7-48ff-be81-d6c7a343e2a5" />
   </Folder>
+  <Project Path="BootCamp.Contract/BootCamp.Contract.csproj" Id="2c9c6b23-a575-4b02-9ddf-b60cb304733c" />
   <Project Path="BootCamp.RabitMqPublisher/BootCamp.RabbitMqPublisher.csproj" />
   <Project Path="D:/Nutshell/BootCamp/BootCamp.RabbitMqWorker/BootCamp.RabbitMqWorker.csproj" />
   <Project Path="D:/Nutshell/BootCamp/BootCamp.Test/BootCamp.Test.csproj" Id="e63b5d6e-6c33-4f82-93d8-2a109c703b59" />

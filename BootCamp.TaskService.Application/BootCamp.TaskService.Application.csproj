@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
@@ -17,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BootCamp.Contract\BootCamp.Contract.csproj" />
+    <ProjectReference Include="..\BootCamp.RabitMqPublisher\BootCamp.RabbitMqPublisher.csproj" />
     <ProjectReference Include="..\BootCamp.TaskService.Domain\BootCamp.TaskService.Domain.csproj" />
     <ProjectReference Include="..\BootCamp.TaskService.Infrastructure\BootCamp.TaskService.Infrastructure.csproj" />
   </ItemGroup>
