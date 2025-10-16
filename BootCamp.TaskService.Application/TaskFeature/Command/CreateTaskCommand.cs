@@ -38,7 +38,7 @@ public class CreateTaskCommand(TaskServiceDbContext context, IMessagePublisher p
                 TaskId: task.Id,
                 UserId: task.UserId,
                 Title: task.Title,
-                CreatedAtUtc: DateTime.UtcNow,
+                CreatedAt: DateTime.UtcNow,
                 CorrelationId: correlationId
             );
 

@@ -13,6 +13,7 @@
   </Folder>
   <Project Path="BootCamp.Contract/BootCamp.Contract.csproj" Id="2c9c6b23-a575-4b02-9ddf-b60cb304733c" />
   <Project Path="BootCamp.RabitMqPublisher/BootCamp.RabbitMqPublisher.csproj" />
+  <Project Path="BootCamp.YarpGetAway/BootCamp.YarpGetAway.csproj" Id="e69dd3fe-4350-4988-befc-6efdc100f326" />
   <Project Path="D:/Nutshell/BootCamp/BootCamp.RabbitMqWorker/BootCamp.RabbitMqWorker.csproj" />
   <Project Path="D:/Nutshell/BootCamp/BootCamp.Test/BootCamp.Test.csproj" Id="e63b5d6e-6c33-4f82-93d8-2a109c703b59" />
 </Solution>

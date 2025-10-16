@@ -1,14 +1,18 @@
-﻿using BootCamp.TaskService.Application.TaskFeature.Models.Request;
+﻿using BootCamp.Contract.Events;
+using BootCamp.RabitMqPublisher;
+using BootCamp.TaskService.Application.TaskFeature.Models.Request;
 using BootCamp.TaskService.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace BootCamp.TaskService.Application.TaskFeature.Command;
 
-public class UpdateTaskCommand(TaskServiceDbContext context)
+public class UpdateTaskCommand(TaskServiceDbContext context, IMessagePublisher publisher,
+     IHttpContextAccessor accessor)
 {
     public async Task<BaseResponse> ExecuteAsync(Guid id, UpdateTaskRequest request, CancellationToken ct)
     {
-        var task = await context.Tasks.SingleOrDefaultAsync(x => x.Id == id);
+        var task = await context.Tasks.FirstOrDefaultAsync(x => x.Id == id, ct);
 
         task.Title = request.Title;
         task.Description = request.Description;
@@ -16,6 +20,20 @@ public class UpdateTaskCommand(TaskServiceDbContext context)
         try
         {
             await context.SaveChangesAsync(ct);
+            var correlationId = accessor.HttpContext?.Request.Headers["X-Correlation-Id"].FirstOrDefault()
+                        ?? Guid.NewGuid().ToString();
+
+            var @event = new TaskUpdatedV1(
+                TaskId: task.Id,
+                UserId: task.UserId,
+                Title: task.Title,
+                Description: task.Description,
+                UpdatedAt: DateTime.UtcNow,
+                CorrelationId: correlationId
+            );
+
+            await publisher.PublishAsync("task.queue", @event, ct);
+
             return new() { Id = task.Id };
         }
         catch (DbUpdateConcurrencyException ex)

@@ -1,12 +1,16 @@
-﻿using BootCamp.TaskService.Application.TaskFeature.Models.Request;
+﻿using BootCamp.Contract.Events;
+using BootCamp.RabitMqPublisher;
+using BootCamp.TaskService.Application.TaskFeature.Models.Request;
 using BootCamp.TaskService.Domain.Entity;
 using BootCamp.TaskService.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Transactions;
 
 namespace BootCamp.TaskService.Application.TaskFeature.Command;
 
-public class CreateTaskWithFirstCommentCommand(TaskServiceDbContext context)
+public class CreateTaskWithFirstCommentCommand(TaskServiceDbContext context, IMessagePublisher publisher,
+     IHttpContextAccessor accessor)
 {
     public async Task<BaseResponse> ExecuteAsync(CreateTaskWithFirstCommentRequest request, CancellationToken ct) 
     {
@@ -34,6 +38,21 @@ public class CreateTaskWithFirstCommentCommand(TaskServiceDbContext context)
                 context.Tasks.Add(task);
                 await context.SaveChangesAsync(ct);
                 scope.Complete();
+                var correlationId = accessor.HttpContext?.Request.Headers["X-Correlation-Id"].FirstOrDefault()
+                            ?? Guid.NewGuid().ToString();
+                
+                var @event = new FirstCommentTaskCreatedV1(
+                TaskId: task.Id,
+                UserId: task.UserId,
+                TaskTitle: task.Title,
+                TaskDescription: task.Description,
+                TaskComment: taskComment.Content,
+                CreatedAt: DateTime.UtcNow,
+                CorrelationId: correlationId
+                );
+
+                await publisher.PublishAsync("task.queue", @event, ct);
+
                 return new() { Id = task.Id };
 
             }

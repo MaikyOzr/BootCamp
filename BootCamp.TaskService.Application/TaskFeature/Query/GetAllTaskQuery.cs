@@ -21,6 +21,7 @@ public class GetAllTaskQuery(TaskServiceDbContext context)
                 .AsNoTracking()
                 .ToListAsync(ct);
 
+
         return task;
     }
 }
