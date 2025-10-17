@@ -10,19 +10,19 @@ public class RabbitMqPublisher(IConnection connection) : IMessagePublisher
     private const string RetryExchange = "app.retry";
     private const string DlxExchange = "app.dlx";
 
-    private const string DlqQueue = "task.queue.dlq";
-    private const string DlqRoutingKey = "task.dead";
-
-    private const string RetryKey1 = "task.retry.1";
-    private const string RetryKey3 = "task.retry.3";
-    private const string RetryKey5 = "task.retry.5";
-
-    private const string RetryQueue1 = "task.retry.1s";
-    private const string RetryQueue3 = "task.retry.3s";
-    private const string RetryQueue5 = "task.retry.5s";
-
     public async Task PublishAsync<T>(string mainQueueName, T message, CancellationToken ct)
     {
+        string DlqQueue = $"{mainQueueName}.dlq";
+        string DlqRoutingKey = $"{mainQueueName}.dead";
+
+        string RetryKey1 = $"{mainQueueName}.retry.1";
+        string RetryKey3 = $"{mainQueueName}.retry.3";
+        string RetryKey5 = $"{mainQueueName}.retry.5";
+
+        string RetryQueue1 = $"{mainQueueName}.retry.1s";
+        string RetryQueue3 = $"{mainQueueName}.retry.3s";
+        string RetryQueue5 = $"{mainQueueName}.retry.5s";
+
         string MainRoutingKey = mainQueueName + ".created";
 
         Dictionary<string, object> args = new Dictionary<string, object>
