@@ -34,15 +34,16 @@ public class CreateTaskCommand(TaskServiceDbContext context, IMessagePublisher p
             var correlationId = accessor.HttpContext?.Request.Headers["X-Correlation-Id"].FirstOrDefault()
                             ?? Guid.NewGuid().ToString();
 
-            var @event = new TaskCreatedEventV1(
+            var createdTaskV1 = new TaskCreatedV1(
                 TaskId: task.Id,
                 UserId: task.UserId,
                 Title: task.Title,
+                Description: task.Description,
                 CreatedAt: DateTime.UtcNow,
                 CorrelationId: correlationId
             );
 
-            await publisher.PublishAsync("task.queue", @event, ct);
+            await publisher.PublishAsync("task.queue", createdTaskV1, ct);
 
             return new() { Id = task.Id };
         }

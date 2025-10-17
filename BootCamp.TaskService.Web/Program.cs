@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using Asp.Versioning.Builder;
 using BootCamp.TaskService.Web;
 using BootCamp.TaskService.Web.Endpoints;
 using BootCamp.TaskService.Web.Middlewere;
@@ -20,12 +22,22 @@ if (app.Environment.IsDevelopment())
     builder.Configuration.AddUserSecrets<Program>(optional: true);
 }
 
+ApiVersionSet apiVersionSet = app.NewApiVersionSet()
+    .HasApiVersion(new ApiVersion(1))
+    .HasApiVersion(new ApiVersion(2))
+    .ReportApiVersions()
+    .Build();
+
+RouteGroupBuilder versionGroup = app.MapGroup("/api/v{apiVersion:apiVersion}")
+    .WithApiVersionSet(apiVersionSet);
+
+
 app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
-app.MapTaskEndpoints();
+versionGroup.MapTaskEndpoints();
 
 app.UseMiddleware<CustomRequestLogMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();

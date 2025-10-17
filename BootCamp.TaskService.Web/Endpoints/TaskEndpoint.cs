@@ -1,5 +1,4 @@
-﻿using BootCamp.RabitMqPublisher;
-using BootCamp.TaskService.Application.TaskFeature.Command;
+﻿using BootCamp.TaskService.Application.TaskFeature.Command;
 using BootCamp.TaskService.Application.TaskFeature.Models.Request;
 using BootCamp.TaskService.Application.TaskFeature.Models.Response;
 using BootCamp.TaskService.Application.TaskFeature.Query;
@@ -20,7 +19,15 @@ public static class TaskEndpoint
             validator.ValidateAndThrow(request);
             var res = await command.ExecuteAsync(request, ct);
             return Results.Ok(res);
-        });
+        }).MapToApiVersion(1);
+
+        app.MapPost("/task", async (CreateTaskRequest request, CreateTaskCommand command,
+            IValidator<CreateTaskRequest> validator, CancellationToken ct) =>
+        {
+            validator.ValidateAndThrow(request);
+            var res = await command.ExecuteAsync(request, ct);
+            return Results.Ok(res);
+        }).MapToApiVersion(2);
 
         app.MapPost("/task-with-comment", async
             (HttpContext context, CreateTaskWithFirstCommentRequest request,
@@ -31,8 +38,18 @@ public static class TaskEndpoint
             var res = await command.ExecuteAsync(request, ct);
 
             return Results.Ok(res);
-        }
-        );
+        }).MapToApiVersion(1);
+
+        app.MapPost("/task-with-comment", async
+           (HttpContext context, CreateTaskWithFirstCommentRequest request,
+           CreateTaskWithFirstCommentCommand command,
+           IValidator<CreateTaskWithFirstCommentRequest> validator, CancellationToken ct) =>
+        {
+            validator.ValidateAndThrow(request);
+            var res = await command.ExecuteAsync(request, ct);
+
+            return Results.Ok(res);
+        }).MapToApiVersion(2);
 
         app.MapPatch("/task/{id:guid}", async
         (HttpContext context, IValidator<UpdateTaskRequest> validator,
@@ -41,7 +58,16 @@ public static class TaskEndpoint
             validator.ValidateAndThrow(request);
             var res = await command.ExecuteAsync(id, request, ct);
             return Results.Ok(res);
-        });
+        }).MapToApiVersion(2);
+
+        app.MapPatch("/task/{id:guid}", async
+        (HttpContext context, IValidator<UpdateTaskRequest> validator,
+        Guid id, UpdateTaskRequest request, UpdateTaskCommand command, CancellationToken ct) =>
+        {
+            validator.ValidateAndThrow(request);
+            var res = await command.ExecuteAsync(id, request, ct);
+            return Results.Ok(res);
+        }).MapToApiVersion(2);
 
         app.MapGet("/tasks/{userId:guid}", async
         (Guid userId, GetAllTaskQuery query, IMemoryCache cache, CancellationToken ct) =>

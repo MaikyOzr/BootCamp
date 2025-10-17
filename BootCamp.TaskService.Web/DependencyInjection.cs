@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using StackExchange.Redis;
 using Microsoft.EntityFrameworkCore;
+using Asp.Versioning;
 
 namespace BootCamp.TaskService.Web;
 
@@ -53,6 +54,15 @@ public static class DependencyInjection
             .Validate(x => !string.IsNullOrWhiteSpace(x.DefaultConnection),
             "ConnectionStrings:DefaultConnection must be set")
             .ValidateOnStart();
+
+        services.AddApiVersioning(opt =>
+        {
+            opt.AssumeDefaultVersionWhenUnspecified = true;
+            opt.DefaultApiVersion = new ApiVersion(1);
+            opt.ReportApiVersions = true;
+        });
+
+        
     }
 
     private static IServiceCollection AddCommand(this IServiceCollection services)

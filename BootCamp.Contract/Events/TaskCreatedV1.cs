@@ -1,9 +1,10 @@
 ﻿namespace BootCamp.Contract.Events;
 
-public record TaskCreatedEventV1(
+public record TaskCreatedV1(
     Guid TaskId,
     Guid UserId,
     string Title,
+    string? Description,
     DateTime CreatedAt,
     string CorrelationId
 );
