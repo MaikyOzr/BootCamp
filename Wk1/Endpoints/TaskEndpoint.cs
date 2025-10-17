@@ -2,7 +2,7 @@
 using BootCamp.Application.Feature.Task.Models.Request;
 using BootCamp.Application.Feature.Task.Models.Response;
 using BootCamp.Application.Feature.Task.Query;
-using BootCamp.Domain;
+using BootCamp.RabitMqPublisher;
 using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
 using StackExchange.Redis;
@@ -15,12 +15,12 @@ public static class TaskEndpoint
     public static void MapTaskEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPost("/task", async (HttpContext context, CreateTaskRequest request,
-        CreateTaskCommand command, IValidator<CreateTaskRequest> validator,
-        CancellationToken ct) =>
+        CreateTaskCommand command, IValidator<CreateTaskRequest> validator, 
+        IMessagePublisher publisher, CancellationToken ct) =>
         {
             validator.ValidateAndThrow(request);
+            await publisher.PublishAsync("task", request, ct);
             var res = await command.ExecuteAsync(request, ct);
-
             return Results.Ok(res);
         });
 
@@ -65,13 +65,13 @@ public static class TaskEndpoint
         app.MapGet("/task/{id:guid}", async
         (Guid id, GetByIdTaskQuery query, HttpClient client, IConnectionMultiplexer muxer, CancellationToken ct) =>
         {
-            var key = $"task:{id}";
+            var cacheKey = $"task:{id}";
             IDatabase redis = muxer.GetDatabase();
-            var value = await redis.StringGetAsync(key);
+            var value = await redis.StringGetAsync(cacheKey);
             if (value.IsNull)
             {
                 var res = await query.ExecuteAsync(id, ct);
-                await redis.StringSetAsync(key, JsonSerializer.Serialize(res), TimeSpan.FromMinutes(10));
+                await redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(res), TimeSpan.FromMinutes(10));
                 return Results.Ok(res);
             }
             var task = JsonSerializer.Deserialize<GetByIdTaskResponse>(value.ToString());

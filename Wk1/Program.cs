@@ -4,7 +4,6 @@ using Wk1.Endpoints;
 using Wk1.Middlewere;
 
 var builder = WebApplication.CreateBuilder(args);
-
 builder.Host.UseSerilog((ctx, lc) => lc
     .WriteTo.Console()
     .ReadFrom.Configuration(ctx.Configuration));

@@ -20,7 +20,7 @@ public class CreateTaskCommand(AppDbContext context, UserManager<User> userManag
             UserId = request.UserId,
         };
 
-        var existTask = await context.Tasks.Where(x => x.UserId == task.UserId).SingleOrDefaultAsync(ct);
+        var existTask = await context.Tasks.Where(x => x.UserId == task.UserId).FirstOrDefaultAsync(ct);
         if (existTask != null && existTask.Title == task.Title)
         {
             throw new Exception("Same task is exist");
