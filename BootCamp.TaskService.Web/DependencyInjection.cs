@@ -15,6 +15,8 @@ using RabbitMQ.Client;
 using StackExchange.Redis;
 using Microsoft.EntityFrameworkCore;
 using Asp.Versioning;
+using BootCamp.TaskService.Application.Common;
+using BootCamp.TaskService.Web.Background;
 
 namespace BootCamp.TaskService.Web;
 
@@ -62,7 +64,9 @@ public static class DependencyInjection
             opt.ReportApiVersions = true;
         });
 
-        
+        services.AddScoped<IOutboxWriter, OutboxWriter>();
+        services.Configure<OutboxOptions>(configuration.GetSection("Outbox"));
+        services.AddHostedService<OutboxProcessor>();
     }
 
     private static IServiceCollection AddCommand(this IServiceCollection services)

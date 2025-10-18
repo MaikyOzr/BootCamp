@@ -1,5 +1,6 @@
 ﻿using BootCamp.Contract.Events;
 using BootCamp.RabitMqPublisher;
+using BootCamp.TaskService.Application.Common;
 using BootCamp.TaskService.Application.TaskFeature.Models.Request;
 using BootCamp.TaskService.Infrastructure;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BootCamp.TaskService.Application.TaskFeature.Command;
 
 public class UpdateTaskCommand(TaskServiceDbContext context, IMessagePublisher publisher,
-     IHttpContextAccessor accessor)
+     IHttpContextAccessor accessor, IOutboxWriter outboxWriter)
 {
     public async Task<BaseResponse> ExecuteAsync(Guid id, UpdateTaskRequest request, CancellationToken ct)
     {
@@ -32,7 +33,7 @@ public class UpdateTaskCommand(TaskServiceDbContext context, IMessagePublisher p
                 CorrelationId: correlationId
             );
 
-            await publisher.PublishAsync("task.queue", @event, ct);
+            
 
             return new() { Id = task.Id };
         }

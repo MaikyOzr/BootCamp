@@ -17,5 +17,5 @@ consumer.ReceivedAsync += async (ch, ea) =>
     await channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
 };
 
-await channel.BasicConsumeAsync(queue: "task.queue", autoAck: false, consumer);
+await channel.BasicConsumeAsync(queue: "task", autoAck: false, consumer);
 Console.ReadLine();
