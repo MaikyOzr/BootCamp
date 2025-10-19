@@ -28,8 +28,6 @@ public class CreateTaskCommand(TaskServiceDbContext context, IMessagePublisher p
             throw new Exception("Same task is exist");
         }
 
-        using var transaction = await context.Database.BeginTransactionAsync(ct);
-
         try
         {
             context.Tasks.Add(task);
@@ -49,18 +47,11 @@ public class CreateTaskCommand(TaskServiceDbContext context, IMessagePublisher p
 
             await outboxWriter.AddAsync(type: nameof(TaskCreatedV1), payload: createdTask, correlationId: correlationId, ct);
 
-            await transaction.CommitAsync(ct);
-
             return new() { Id = task.Id };
         }
         catch (DbUpdateConcurrencyException ex) 
         {
             throw new Exception("A concurrency error occurred while creating the task.", ex);
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
         }
     }
 }

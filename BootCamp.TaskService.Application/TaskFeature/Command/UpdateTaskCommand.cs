@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BootCamp.TaskService.Application.TaskFeature.Command;
 
-public class UpdateTaskCommand(TaskServiceDbContext context, IMessagePublisher publisher,
+public class UpdateTaskCommand(TaskServiceDbContext context,
      IHttpContextAccessor accessor, IOutboxWriter outboxWriter)
 {
     public async Task<BaseResponse> ExecuteAsync(Guid id, UpdateTaskRequest request, CancellationToken ct)
@@ -24,7 +24,7 @@ public class UpdateTaskCommand(TaskServiceDbContext context, IMessagePublisher p
             var correlationId = accessor.HttpContext?.Request.Headers["X-Correlation-Id"].FirstOrDefault()
                         ?? Guid.NewGuid().ToString();
 
-            var @event = new TaskUpdatedV1(
+            var updatedTask = new TaskUpdatedV1(
                 TaskId: task.Id,
                 UserId: task.UserId,
                 Title: task.Title,
@@ -33,7 +33,7 @@ public class UpdateTaskCommand(TaskServiceDbContext context, IMessagePublisher p
                 CorrelationId: correlationId
             );
 
-            
+            await outboxWriter.AddAsync(type: nameof(TaskUpdatedV1), payload: updatedTask, correlationId: correlationId, ct);
 
             return new() { Id = task.Id };
         }

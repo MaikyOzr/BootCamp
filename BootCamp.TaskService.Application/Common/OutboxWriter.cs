@@ -21,6 +21,8 @@ public class OutboxWriter(TaskServiceDbContext context) : IOutboxWriter
             OccurredAt = DateTime.UtcNow
         };
 
-        await context.OutboxEvents.AddAsync(outboxEvent, ct);
+        context.OutboxEvents.Add(outboxEvent);
+        await context.SaveChangesAsync(ct);
+
     }
 }

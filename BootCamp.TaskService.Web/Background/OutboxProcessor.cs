@@ -55,7 +55,71 @@ public class OutboxProcessor(IServiceProvider services,
                                     e.ProcessedAtUtc = DateTime.UtcNow;
                                     break;
                                 }
-
+                            case nameof(TaskUpdatedV1):
+                                {
+                                    var msg = JsonSerializer.Deserialize<TaskUpdatedV1>(e.Payload);
+                                    if (msg is null)
+                                    {
+                                        logger.LogWarning("Outbox event {Id} payload deserialized to null for type {Type}", e.Id, e.Type);
+                                        e.Attempts++;
+                                        break;
+                                    }
+                                    await publisher.PublishAsync("task.updated", msg, stoppingToken);
+                                    e.ProcessedAtUtc = DateTime.UtcNow;
+                                    break;
+                                }
+                                case nameof(TaskDeletedV1):
+                                {
+                                    var msg = JsonSerializer.Deserialize<TaskDeletedV1>(e.Payload);
+                                    if (msg is null)
+                                    {
+                                        logger.LogWarning("Outbox event {Id} payload deserialized to null for type {Type}", e.Id, e.Type);
+                                        e.Attempts++;
+                                        break;
+                                    }
+                                    await publisher.PublishAsync("task.deleted", msg, stoppingToken);
+                                    e.ProcessedAtUtc = DateTime.UtcNow;
+                                    break;
+                                }
+                            case nameof(TaskCommentCreatedV1):
+                                {
+                                    var msg = JsonSerializer.Deserialize<TaskCommentCreatedV1>(e.Payload);
+                                    if (msg is null)
+                                    {
+                                        logger.LogWarning("Outbox event {Id} payload deserialized to null for type {Type}", e.Id, e.Type);
+                                        e.Attempts++;
+                                        break;
+                                    }
+                                    await publisher.PublishAsync("task.comment.created", msg, stoppingToken);
+                                    e.ProcessedAtUtc = DateTime.UtcNow;
+                                    break;
+                                }
+                            case nameof(TaskCommentUpdatedV1):
+                                {
+                                    var msg = JsonSerializer.Deserialize<TaskCommentUpdatedV1>(e.Payload);
+                                    if (msg is null)
+                                    {
+                                        logger.LogWarning("Outbox event {Id} payload deserialized to null for type {Type}", e.Id, e.Type);
+                                        e.Attempts++;
+                                        break;
+                                    }
+                                    await publisher.PublishAsync("task.comment.created", msg, stoppingToken);
+                                    e.ProcessedAtUtc = DateTime.UtcNow;
+                                    break;
+                                }
+                            case nameof(FirstCommentTaskCreatedV1):
+                                {
+                                    var msg = JsonSerializer.Deserialize<FirstCommentTaskCreatedV1>(e.Payload);
+                                    if (msg is null)
+                                    {
+                                        logger.LogWarning("Outbox event {Id} payload deserialized to null for type {Type}", e.Id, e.Type);
+                                        e.Attempts++;
+                                        break;
+                                    }
+                                    await publisher.PublishAsync("task.firstcomment.created", msg, stoppingToken);
+                                    e.ProcessedAtUtc = DateTime.UtcNow;
+                                    break;
+                                }
                             default:
                                 logger.LogWarning("Unknown outbox event type {Type}, id {Id}", e.Type, e.Id);
                                 e.Attempts++;
@@ -75,7 +139,6 @@ public class OutboxProcessor(IServiceProvider services,
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
-                // graceful shutdown
             }
             catch (Exception ex)
             {

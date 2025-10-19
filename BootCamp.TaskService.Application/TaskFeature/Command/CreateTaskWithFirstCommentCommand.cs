@@ -1,5 +1,5 @@
 ﻿using BootCamp.Contract.Events;
-using BootCamp.RabitMqPublisher;
+using BootCamp.TaskService.Application.Common;
 using BootCamp.TaskService.Application.TaskFeature.Models.Request;
 using BootCamp.TaskService.Domain.Entity;
 using BootCamp.TaskService.Infrastructure;
@@ -9,7 +9,8 @@ using System.Transactions;
 
 namespace BootCamp.TaskService.Application.TaskFeature.Command;
 
-public class CreateTaskWithFirstCommentCommand(TaskServiceDbContext context, IMessagePublisher publisher,
+public class CreateTaskWithFirstCommentCommand(TaskServiceDbContext context, 
+    IOutboxWriter outboxWriter,
      IHttpContextAccessor accessor)
 {
     public async Task<BaseResponse> ExecuteAsync(CreateTaskWithFirstCommentRequest request, CancellationToken ct) 
@@ -41,7 +42,7 @@ public class CreateTaskWithFirstCommentCommand(TaskServiceDbContext context, IMe
                 var correlationId = accessor.HttpContext?.Request.Headers["X-Correlation-Id"].FirstOrDefault()
                             ?? Guid.NewGuid().ToString();
                 
-                var @event = new FirstCommentTaskCreatedV1(
+                var firstCommentTaskCreated = new FirstCommentTaskCreatedV1(
                 TaskId: task.Id,
                 UserId: task.UserId,
                 TaskTitle: task.Title,
@@ -51,7 +52,7 @@ public class CreateTaskWithFirstCommentCommand(TaskServiceDbContext context, IMe
                 CorrelationId: correlationId
                 );
 
-                await publisher.PublishAsync("task.queue", @event, ct);
+                await outboxWriter.AddAsync(type: nameof(FirstCommentTaskCreatedV1), payload: firstCommentTaskCreated, correlationId: correlationId, ct);
 
                 return new() { Id = task.Id };
 
