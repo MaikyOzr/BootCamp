@@ -1,6 +1,0 @@
-@Wk1_HostAddress = http://localhost:5042
-
-GET {{Wk1_HostAddress}}/user/
-Accept: application/json
-
-###
