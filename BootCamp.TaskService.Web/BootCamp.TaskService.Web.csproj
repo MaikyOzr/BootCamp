@@ -10,6 +10,11 @@
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Http" Version="8.1.0" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="HotChocolate.ApolloFederation" Version="15.1.11" />
+    <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.11" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.11" />
+    <PackageReference Include="HotChocolate.Data" Version="15.1.11" />
+    <PackageReference Include="HotChocolate.Types.Scalars" Version="15.1.11" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0-rc.2.25502.107" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
       <PrivateAssets>all</PrivateAssets>
@@ -28,6 +33,13 @@
     <ProjectReference Include="..\BootCamp.RabitMqPublisher\BootCamp.RabbitMqPublisher.csproj" />
     <ProjectReference Include="..\BootCamp.TaskService.Application\BootCamp.TaskService.Application.csproj" />
     <ProjectReference Include="..\BootCamp.TaskService.Infrastructure\BootCamp.TaskService.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="GrapohQL\Mutation\" />
+    <Folder Include="GrapohQL\DataLoaders\" />
+    <Folder Include="GrapohQL\Errors\" />
+    <Folder Include="GrapohQL\Auth\" />
   </ItemGroup>
 
 </Project>

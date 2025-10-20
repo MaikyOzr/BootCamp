@@ -39,6 +39,8 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 versionGroup.MapTaskEndpoints();
 
+app.MapGraphQL("/graphql");
+
 app.UseMiddleware<CustomRequestLogMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.Run();

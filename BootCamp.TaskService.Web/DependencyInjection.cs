@@ -1,4 +1,6 @@
-﻿using BootCamp.RabitMqPublisher;
+﻿using Asp.Versioning;
+using BootCamp.RabitMqPublisher;
+using BootCamp.TaskService.Application.Common;
 using BootCamp.TaskService.Application.TaskCommentFeature.Command;
 using BootCamp.TaskService.Application.TaskCommentFeature.Models.Request;
 using BootCamp.TaskService.Application.TaskCommentFeature.Query;
@@ -6,17 +8,19 @@ using BootCamp.TaskService.Application.TaskFeature.Command;
 using BootCamp.TaskService.Application.TaskFeature.Models.Request;
 using BootCamp.TaskService.Application.TaskFeature.Query;
 using BootCamp.TaskService.Application.Validation;
+using BootCamp.TaskService.Domain.Entity;
 using BootCamp.TaskService.Infrastructure;
+using BootCamp.TaskService.Web.Background;
 using BootCamp.TaskService.Web.Exceptions;
+using BootCamp.TaskService.Web.GrapohQL.Query;
+using BootCamp.TaskService.Web.GrapohQL.Types;
 using BootCamp.TaskService.Web.Options;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using StackExchange.Redis;
-using Microsoft.EntityFrameworkCore;
-using Asp.Versioning;
-using BootCamp.TaskService.Application.Common;
-using BootCamp.TaskService.Web.Background;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BootCamp.TaskService.Web;
 
@@ -67,6 +71,13 @@ public static class DependencyInjection
         services.AddScoped<IOutboxWriter, OutboxWriter>();
         services.Configure<OutboxOptions>(configuration.GetSection("Outbox"));
         services.AddHostedService<OutboxProcessor>();
+
+        services
+            .AddGraphQLServer()
+            .AddQueryType<Queries>()
+            .AddType<TaskType>()
+            .AddAuthorization()
+            .BindRuntimeType<uint, LongType>();
     }
 
     private static IServiceCollection AddCommand(this IServiceCollection services)
